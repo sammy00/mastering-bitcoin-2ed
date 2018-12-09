@@ -13,6 +13,5 @@
 - [x] Example 10-6. Extract the coinbase data from the genesis block
 - [x] Example 10-8. SHA256 example
 - [x] Example 10-9. SHA256 script for generating many hashes by iterating on a nonce
-
 - [x] Example 10-11. Simplified Proof-of-Work implementation
 - [x] Example 10-13. Retargeting the Proof-of-Work [more review later]
