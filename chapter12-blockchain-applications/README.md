@@ -89,3 +89,122 @@ Emma buying the video streaming service (1 millibit/s) from Fabian using a payme
 
 - The only way to cancel a transaction is by double-spending its inputs with another transaction before it is mined
 - tx can be constructed to be undesirable to use: gives each party a revocation key that can be used to punish the other party if they try to cheat
+
+> the funding tx should exceed the channel capacity to cover the tx fees
+
+#### implementation
+
+Two parties as A and B
+
+- every commitment tx pays the payee immediately whereas forcing the payer to wait for a short timelock to expire
+- every commitment tx of A looks like
+  - this tx can be constructed by A only since nobody else knows `PK_A`
+  - the revocation public key `RPK_A` is created and kept privately by A
+  - on state transition, `RPK_A` would be revealed to B
+
+```
+Input: 2-of-2 funding output, signed by A
+
+Output 0 <5 bitcoin>:
+  PK_A CHECKSIG
+
+Output 1:
+  IF
+    # Revocation penalty output
+    RPK_A
+  ELSE
+    <1000 blocks> CHECKSEQUENCEVERIFY DROP PK_A
+  ENDIF
+  CHECKSIG
+```
+
+- symmetrically for B's side
+
+```
+Input: 2-of-2 funding output, signed by B
+
+Output 0 <5 bitcoin>:
+  PK_A CHECKSIG
+
+Output 1:
+  IF
+    # Revocation penalty output
+    <Revocation Public Key created by B>
+  ELSE
+    <1000 blocks> CHECKSEQUENCEVERIFY DROP PK_B
+  ENDIF
+  CHECKSIG
+```
+
+#### bilateral revocation protocol
+
+in each round, as the channel state is advanced, the two parties
+
+- exchange new commitments
+- exchange revocation keys for the previous commitment
+- sign each other's commitment transactions
+
+suppose A is to pay B
+
+- for B, he would benefit, i.e. the upcoming state would grant him more balance, so he wouldn't broadcast the previous commitment tx
+- for A, her ability to cheat by broadcasting previous commitment has been revoked, since if she does that, A could redeem the exact tx outputs with the full signature (signed by `PK_A` and `RPK_B`)
+
+> the revocation doesn't happen automatically. The payee should watch the blockchain, and execute the revocation protocol within the delay specified in the payer's tx (i.e., 1000 blocks in our cases) which would weaken the revocability
+
+- Asymmetric revocable commitments with relative time locks (CSV) are a much better way to implement payment channels and a very significant innovation in this technology
+
+### Hash Time Lock Contracts (HTLC)
+
+- **definition**: a special type of smart contract that allows the participants to commit funds to **a redeemable secret**, with **an expiration time**
+- **hash** part: the intended recipent create a secret `R`, whose hash `H=Hash(R)` can be included in an output's locking script, and this output can be redeemed by everyone knows `R`
+- **time lock** part: payer will be refunded in case of no secret be revealed before the expiration of the time lock (achieved by `CHECKLOCKTIMEVERIFY`)
+- a naive example HTLC script
+
+```
+IF
+  # Payment if you have the secret R
+  HASH160 <H> EQUALVERIFY
+ELSE
+  # Refund after timeout.
+  <locktime> CHECKLOCKTIMEVERIFY DROP
+  <Payee Pubic Key> CHECKSIG
+ENDIF
+```
+
+a practical solution would be adding a CHECKSIG operator and a public key in the
+first clause restricts redemption of the hash to a named recipient, who must also
+know the secret R.
+
+## Routed Payment Channels (Lightning Network)
+
+**motivation**
+
+- payer isn't connected to payee by a payment channel
+- a new payment channel would require a funding tx locked in blockchain
+
+### Basic Lightning Network Example
+
+![lightning network](./images/lightning-network.png)
+
+**notices**
+
+- payment is decremented hop by hop
+- time locks is alose decremented hop by hop
+
+### Lightning Network Transport and Routing
+
+- a long-term public key that they use as an identifier and to authenticate each other.
+- every payment requires payer to construct a path through the network by connecting payment channels with **sufficient capacity**.
+- the routing path is only known to payer. All other participants in the payment route see only the adjacent nodes
+  - ensuring privacy of payments
+  - making it very difficult to apply surveillance, censorship, or blacklists
+- routing the path is always fixed at 20 hops and padded with random data which can signal the payee to stop secretly
+
+### Lightning Network Benefits
+
+- privacy
+- fungibility
+- speed
+- granularity
+- capacity
+- truestless operation
