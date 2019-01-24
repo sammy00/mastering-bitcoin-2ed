@@ -2,6 +2,8 @@
 
 ## Work in Progress
 
+- [x] Chapter06. Transactions
+
 ### Chapter 10
 
 > All the command line operations have been replaced by the API of equivalent effect provided by blockchain.com. That also means network availability is required to run the examples in this chapter.
