@@ -9,6 +9,7 @@ import (
 
 func CalcBlockSubsidy() {}
 
+// Example 10-5. Calculating the block reward—Function GetBlockSubsidy
 func ExampleCalcBlockSubsidy() {
 	const height = 277316
 

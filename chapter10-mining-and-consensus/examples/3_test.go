@@ -9,6 +9,7 @@ import (
 	"testing"
 )
 
+// Example 10-3. Using the command line to retrieve block 277,316
 func Block277316(t *testing.T) []byte {
 	// hash of block of height 277316
 	blockHash := "0000000000000001b6b9a13b095e96db41c4a928b97ef2d944a9b31b2cc7bdc4"
