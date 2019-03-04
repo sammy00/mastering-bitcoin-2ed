@@ -87,6 +87,7 @@ Generating entropy and encoding as mnemonic words goes as
     - introduce a passphrase serving as an additional security factor protecting the seed
 - From mnemonic to seed is depicted as
   ![From mnemonic to seed](images/mnemonic-to-seed.png)
+- Code snippet goes as [examples/table5_test.go](examples/table5_test.go)
 
 #### Optional passphrase in BIP-39
 
