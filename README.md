@@ -2,7 +2,8 @@
 
 ## Work in Progress
 
-- [x] Chapter06. Transactions
+- [ ] Chapter 05. Wallets
+- [x] Chapter 06. Transactions
 
 ### Chapter 10
 
