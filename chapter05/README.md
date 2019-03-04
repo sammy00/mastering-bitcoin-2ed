@@ -156,3 +156,50 @@ The derivation process is depicted as
 - **Problem**: The known/leaked child private key can be combined with the public chain code to derive **all other child private keys** and the **the parent private key**
 - **Solution**: hardened derivation depicted as
   ![Hardened derivation of a child key; omits the parent public key](images/hardened-derivation.png)
+
+- As a best practice, the level-1 children of the master keys are always derived through the hardened derivation, to prevent compromise of the master keys
+
+#### Index numbers for normal and hardened derivation
+
+- Index numbers between 0 and 2^31–1 (0x0 to 0x7FFFFFFF) are used only for normal derivation
+- Index numbers between 231 and 232–1 (0x80000000 to 0xFFFFFFFF) are used only for hardened derivation
+- To make the index number easier to read and display, the index number for hardened children is displayed starting from zero, but with a **prime symbol** (`'`)
+
+#### HD wallet key identifier (path)
+
+- Private keys derived from the master private key start with "m"
+- Public keys derived from the master public key start with "M"
+- Examples go as
+
+  |       HD path | Key described                                                                                                      |
+  | ------------: | :----------------------------------------------------------------------------------------------------------------- |
+  |         `m/0` | The first (`0`) child private key from the master private key (`m`)                                                |
+  |       `m/0/0` | The first grandchild private key of the first child (`m/0`)                                                        |
+  |      `m/0'/0` | The first normal grandchild of the first hardened child (`m/0'`)                                                   |
+  |       `m/1/0` | The first grandchild private key of the second child (`m/1`)                                                       |
+  | `M/23/17/0/0` | The first great-great-grandchild public key of the first great-grandchild of the 18th grandchild of the 24th child |
+
+#### Navigating the HD wallet tree structure
+
+- BIP-43 proposes the use of the first hardened child index as a special identifier that signifies the **"purpose"** of the tree structure
+- BIP-44 proposes a multiaccount structure as **"purpose" number 44'** under BIP-43
+- BIP-44 specifies the structure as consisting of five predefined tree levels:
+
+  ```
+  m / purpose' / coin_type' / account' / change / address_index
+  ```
+
+  |        Level | Description                                                                                                                                 |
+  | -----------: | :------------------------------------------------------------------------------------------------------------------------------------------ |
+  |   `purpose'` | always set to `44'`                                                                                                                         |
+  | `coin_type'` | 3 currencies for now, Bitcoin is `m/44'/0'`, Bitcoin Testnet is `m/44'/1'`, Litecoin is `m/44'/2'`                                          |
+  |   `account'` | allows users to subdivide their wallets into separate logical subaccounts, for accounting or organizational purposes                        |
+  |     `change` | an HD wallet has two subtrees, one for creating receiving addresses (indexed by `0`) and one for creating change addresses (indexed by `1`) |
+
+- Examples of BIP-44 HD wallet structure
+
+  |            HD path | Key described                                                                 |
+  | -----------------: | :---------------------------------------------------------------------------- |
+  |  `M/44'/0'/0'/0/2` | The third receiving public key for the primary bitcoin account                |
+  | `M/44'/0'/3'/1/14` | The fifteenth change-address public key for the fourth bitcoin account        |
+  |  `m/44'/2'/0'/0/1` | The second private key in the Litecoin main account, for signing transactions |
