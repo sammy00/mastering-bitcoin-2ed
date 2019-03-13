@@ -4,6 +4,7 @@
 
 - [x] Chapter 05. Wallets
 - [x] Chapter 06. Transactions
+- [ ] Chapter 07. Advanced Transactions and Scripting
 - [ ] Chapter 08. The Bitcoin Network
 - [x] Appendix D. Segregated Witness
 
