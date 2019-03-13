@@ -81,3 +81,4 @@
 
 - Fee Sniping: Miners attempting to rewrite past blocks "snipe" higher-fee transactions from future blocks to maximize their profitability
 - To prevent "fee sniping," when Bitcoin Core creates transactions, it uses `nLocktime` to limit them to the "next block," by default
+- Official comments go as [Discourage fee sniping](https://github.com/bitcoin/bitcoin/commit/db6047d61b742be07442f891e70570b791c585e3)
