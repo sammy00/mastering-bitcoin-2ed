@@ -6,6 +6,7 @@
 - [x] Chapter 06. Transactions
 - [ ] Chapter 07. Advanced Transactions and Scripting
 - [ ] Chapter 08. The Bitcoin Network
+- [ ] Chapter 12. Blockchain Applications
 - [x] Appendix D. Segregated Witness
 
 ### Chapter 10

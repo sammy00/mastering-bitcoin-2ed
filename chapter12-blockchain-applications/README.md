@@ -1,4 +1,4 @@
-# Chapter12. Blockchain Applications
+# Chapter 12. Blockchain Applications
 
 ## Payment Channels and State Channels
 
@@ -37,7 +37,7 @@
   - Unilaterally, by either party submitting the last commitment transaction to the blockchain
 
   > - Only the funding and settlement transactions need to be submitted for mining on the blockchain
-  > - Any intermediate commitment transactions is held offchain
+  > - Any intermediate commitment transactions is held off-chain
 
 ### Simple Payment Channel Example
 
@@ -45,12 +45,12 @@
 - Emma buying the video streaming service (1 millibit/s) from Fabian using a payment channel
 
   1. Establish the channel with a tx (of total amount `a`) of Emma to a 2-of-2 multisignature address, with each of them holding one of the keys
-  2. For `t` second of video, Emma updates the channel balance in form a new commitment tx
+  2. For `t` second of video, Emma updates the channel balance in form of a new commitment tx
 
   - Crediting `t` millibits to Fabian's address
   - Refunding `a-t` millibits back to Emma's address
 
-  > **Every commitment tx are sourced from the same 2-of-2 output from the funding tx**
+> **Every commitment tx are sourced from the same 2-of-2 output from the funding tx**
 
 ### Making Trustless Channels
 
@@ -100,12 +100,14 @@
 
 Two parties as A and B
 
-- Every commitment tx pays the payee immediately whereas forcing the payer to wait for a short timelock to expire
+- Every commitment tx 
+  - Pays the payee immediately 
+  - Forces the payer to wait for a short timelock to expire
 - Every commitment tx of A looks like
 
-  - This tx can be constructed by A only since nobody else knows `PK_A`
-  - The revocation public key `RPK_A` is created and kept privately by A
-  - On state transition, `RPK_A` would be revealed to B
+  - This tx can be constructed by A only since nobody else knows the private key of `PK_A`
+  - The revocation private key of the public key `RPK_A` is created and kept privately by A
+  - On state transition, the private key corresponding to `RPK_A` would be revealed to B
 
   ```
   Input: 2-of-2 funding output, signed by A
@@ -145,7 +147,7 @@ Two parties as A and B
 
 - In each round, as the channel state is advanced, the two parties
 
-  1. Exchange new commitments (without any signature)
+  1. Exchange new commitments (**WITHOUT ANY SIGNATURE**)
   2. Exchange revocation keys for the previous commitment
   3. Sign each other's commitment transactions
 
@@ -160,7 +162,7 @@ Two parties as A and B
 
 ### Hash Time Lock Contracts (HTLC)
 
-- **DEFINITION**: a special type of smart contract that allows participants to commit funds to **a redeemable secret**, with **an expiration time**
+- **WHAT**: A special type of smart contract that allows participants to commit funds to **a redeemable secret**, with **an expiration time**
 - **Hash** part: the intended recipent create a secret `R`, whose hash `H=Hash(R)` can be included in an output's locking script, and this output can be redeemed by everyone knows `R`
 - **Time lock** part: payer will be refunded in case of no secret be revealed before the expiration of the time lock (achieved by `CHECKLOCKTIMEVERIFY`)
 - A naive example HTLC script
@@ -190,10 +192,7 @@ Two parties as A and B
 
   ![Step-by-step payment routing through a Lightning Network](./images/lightning-network.png)
 
-- **Notices**
-
-  - Payment is decremented hop by hop
-  - Time locks is alose decremented hop by hop
+- **Notices**: Both the **payment amount** and **time locks** are decremented hop by hop
 
 ### Lightning Network Transport and Routing
 
