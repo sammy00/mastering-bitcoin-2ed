@@ -18,7 +18,8 @@
 - Transaction Malleability
   - By moving the witness outside the transaction, the transaction hash used as an identifier no longer includes the witness data
   - With Segregated Witness, transaction hashes become immutable by anyone other than the creator of the transaction
-    > Without segwit, attackers may introduce changes to the `scriptSig` of a tx to change it's `txid`
+    > Without segwit, attackers may introduce changes to the `scriptSig` of a tx to change it's `txid`  
+    > Transaction malleability isn't a problem for most Bitcoin transactions which are designed to be added to the block chain immediately. But it does become a problem when the output from a transaction is spent before that transaction is added to the block chain.
 - Script Versioning
   - The addition of a script version number allows the scripting language to be upgraded in a soft-fork way
 - Network and Storage Scaling
@@ -32,7 +33,7 @@
 
 ## How Segregated Witness Works
 
-- Segregated Witness is also a change to how individual UTXO are spent and therefore is a peroutput feature
+- Segregated Witness is also a change to how individual UTXO are spent and therefore is a per-output feature
 - A Segregated Witness UTXO specifies a locking script that can be satisfied with witness data outside of the input (segregated)
 
 ## Soft Fork (Backward Compatibility)
@@ -51,7 +52,7 @@ Given a P2PKH output script as
 DUP HASH160 ab68025513c3dbd2f7b92a94e0581f5d50f654e7 EQUALVERIFY CHECKSIG
 ```
 
-Its corresponding P2WPKH script goes as
+Its corresponding P2WPKH `scriptPubKey` goes as
 
 ```
 0 ab68025513c3dbd2f7b92a94e0581f5d50f654e7
@@ -72,7 +73,7 @@ Unlocking tx to spend the above P2PKH output goes as
 "Vin": [
 "txid": "0627052b6f28912f2703066a912ea577f2ce4da4caa5a5fbd8a57286c345c2f2",
 "vout": 0,
-  "scriptSig": "<Bob's scriptSig>",
+"scriptSig": "<Bob's scriptSig>",
 ]
 [...]
 ```
@@ -84,7 +85,7 @@ To spend the Segwit output, the tx has an empty `scriptSig` and includes a Segre
 "Vin": [
 "txid": "0627052b6f28912f2703066a912ea577f2ce4da4caa5a5fbd8a57286c345c2f2",
 "vout": 0,
-  "scriptSig": "",
+"scriptSig": "",
 ]
 [...]
 "witness": "<Bob's witness data>"
@@ -94,7 +95,7 @@ To spend the Segwit output, the tx has an empty `scriptSig` and includes a Segre
 ### Wallet construction of P2WPKH
 
 - It is extremely important to note that **P2WPKH should only be created by the payee (recipient)** and not converted by the sender from a known public key, P2PKH script, or address
-- Additionally, P2WPKH outputs must be constructed from the hash of a compressed public key
+- P2WPKH outputs MUST be constructed from the hash of a compressed public key
 
 ### Pay-to-Witness-Script-Hash (P2WSH)
 
@@ -115,28 +116,31 @@ whose unlocking script goes as
 #### P2WSH
 
 - The Segwit program consists of two values pushed to the stack
+
   - a witness version (`0`)
   - the **32-byte** SHA256 hash of the redeem script
 
-> While P2SH uses the 20-byte RIPEMD160(SHA256(script)) hash, the P2WSH witness program uses a 32-byte SHA256(script) hash. This difference in the selection of the hashing algorithm is deliber‐ ate and is used to differentiate between the two types of witness programs (P2WPKH and P2WSH) by the length of the hash and to provide stronger security to P2WSH (128 bits versus 80 bits of P2SH)
+  > While P2SH uses the 20-byte RIPEMD160(SHA256(script)) hash, the P2WSH witness program uses a 32-byte SHA256(script) hash. This difference in the selection of the hashing algorithm is deliberate and is used to differentiate between the two types of witness programs (P2WPKH and P2WSH) by the length of the hash and to provide stronger security to P2WSH (128 bits versus 80 bits of P2SH)
 
-- And the corresponding `scriptSig` goes as
+- And the corresponding `scriptPubKey` goes as
 
-```
-0 9592d601848d04b172905e0ddb0adde59f1590f1e553ffc81ddc4b0ed927dd73
-```
+  ```
+  0 9592d601848d04b172905e0ddb0adde59f1590f1e553ffc81ddc4b0ed927dd73
+  ```
 
-- The unlocking tx goes
+- The unlocking tx goes as
 
-```
-[...]
-"Vin": [
-"txid": "abcdef12345...",
-"vout": 0,
-  "scriptSig": "",
-]
-[...]
-```
+  ```json
+  [...]
+  "Vin": [
+  "txid": "abcdef12345...",
+  "vout": 0,
+    "scriptSig": "",
+  ]
+  [...]
+  "witness": "<SigA> <SigB> <2 PubA PubB PubC PubD PubE 5 CHECKMULTISIG>"
+  [...]
+  ```
 
 ### Differentiating between P2WPKH and P2WSH
 
@@ -147,10 +151,11 @@ whose unlocking script goes as
 ## Upgrading to Segregated Witness
 
 - **HOW**
+
   1. Wallets must create special segwit type outputs
   2. These outputs can be spent by wallets that know how to construct Segwit transactions
 
-> For P2WPKH and P2WSH payment types, both the sender and the recipient wallets need to be upgraded to be able to use segwit. Furthermore, the sender's wallet needs to know that the recipient's wallet is segwit-aware
+  > For P2WPKH and P2WSH payment types, both the sender and the recipient wallets need to be upgraded to be able to use segwit. Furthermore, the sender's wallet needs to know that the recipient's wallet is segwit-aware
 
 - 2 important scenarios
   - Ability of a sender's wallet that is not segwit-aware to make a payment to a recipient's wallet that can process segwit transactions
@@ -161,7 +166,7 @@ whose unlocking script goes as
 - **WHEN**
   - Payer isn't segwit-aware
   - Payee is segwit-aware and want segwit payment
-- **HOW**: embed the witness scripts P2WPKH/P2WSH as a P2SH address, which is known as P2SH(P2WPKH)/P2SH(P2WSH)
+- **HOW**: Embed the witness scripts P2WPKH/P2WSH as a P2SH address, which is known as P2SH(P2WPKH)/P2SH(P2WSH)
 
 ### P2SH(P2WPKH): Pay-to-Witness-Public-Key-Hash inside Pay-to-Script-Hash
 
