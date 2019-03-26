@@ -1,4 +1,4 @@
-# Transactions
+# Chapter 06. Transactions
 
 ## Introduction
 
@@ -233,31 +233,31 @@ two parts
 
 #### `ANYONECANPAY` modifier
 
-- When `ANYONECANPAY` is set, only one input is signed, leaving the rest (and their sequence numbers) open for modification.
+- When `ANYONECANPAY` is set, **ONLY ONE INPUT IS SIGNED**, leaving the rest (and their sequence numbers) open for modification
 - `SIGHASH` types with modifiers and their meanings
 
-  | `SIGHASH` flag        | Value | Description                                                              |
-  | --------------------- | ----- | ------------------------------------------------------------------------ |
-  | `ALL|ANYONECANPAY`    | 0x81  | Signature applies to one inputs and all outputs                          |
-  | `NONE|ANYONECANPAY`   | 0x82  | Signature applies to one inputs, none of the outputs                     |
-  | `SINGLE|ANYONECANPAY` | 0x83  | Signature applies to one input and the output with the same index number |
+  | `SIGHASH` flag         | Value | Description                                                              |
+  | ---------------------- | ----- | ------------------------------------------------------------------------ |
+  | `ALL\|ANYONECANPAY`    | 0x81  | Signature applies to one inputs and all outputs                          |
+  | `NONE\|ANYONECANPAY`   | 0x82  | Signature applies to one inputs, none of the outputs                     |
+  | `SINGLE\|ANYONECANPAY` | 0x83  | Signature applies to one input and the output with the same index number |
 
 #### Detailed Implementation
 
-1. a copy of the transaction is made
-2. certain fields within are truncated (set to zero length and emptied)
-3. the resulting transaction is serialized
-4. the `SIGHASH` flag is added to the end of the serialized transaction
-5. the result is hashed
+1. A copy of the transaction is made
+2. Certain fields within are truncated (set to zero length and emptied)
+3. The resulting transaction is serialized
+4. The `SIGHASH` flag is added to the end of the serialized transaction
+5. The result is hashed
 6. The hash itself is the "message" that is signed
 
-#### use cases
+#### Use cases
 
-| flag                | use case                                        |
-| ------------------- | ----------------------------------------------- |
-| `ALL|ANYONECANPAY`  | crowdfunding                                    |
-| `NONE`              | bearer check/blank check with payee unspecified |
-| `NONE|ANYONECANPAY` | dust collector                                  |
+| Flag                 | Use case                                                    |
+| -------------------- | ----------------------------------------------------------- |
+| `ALL\|ANYONECANPAY`  | Crowdfunding by specifying a single output of "goal" amount |
+| `NONE`               | Bearer check/blank check with payee unspecified             |
+| `NONE\|ANYONECANPAY` | Dust collector                                              |
 
 ## ECDSA Math
 
