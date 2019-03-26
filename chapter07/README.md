@@ -5,7 +5,7 @@
 - Timelocks are restrictions on transactions or outputs that only allow spending after a point in time
 - Timelocks are useful for postdating transactions and locking funds to a date in the future
 
-### Transaction Locktime (nLocktime)
+### Transaction Locktime (`nLocktime`)
 
 - Transaction locktime is a transaction-level setting (`nLocktime` field in the transaction data structure) that defines the earliest time that a transaction is valid and can be relayed on the network or added to the blockchain
 - `0<nLocktime<500,000,000` is interpreted as a block height
@@ -38,7 +38,7 @@
 ### Relative Timelocks
 
 - **WHY**: `nLocktime` and `CLTV` are both **absolute timelocks** in that they specify an absolute point in time
-- **HOW**: Relative timelocks doesn't start counting until the funding UTXO is recor‐ ded on the blockchain
+- **HOW**: Relative timelocks doesn't start counting until the funding UTXO is recorded on the blockchain
   - The transaction-level relative timelock is implemented as a consensus rule on the value of 4-byte `nSequence` field set in every transaction input
   - Script-level relative timelocks are implemented with the `CHECKSEQUENCEVERIFY` (CSV) opcode
 
@@ -46,9 +46,9 @@
 
 #### Original meaning of `nSequence`
 
-- `nSequence<(2^32-1)` indicates a non-finalized tx, otherwise a finalized and mined tx
-- `nSequence` is customarily set to `(2^32-1)` in transactions that do not utilize timelocks
-- For transactions with `nLocktime` or `CHECKLOCKTIMEVERIFY`, the `nSequence` value must be set to less than `(2^32-1)` for the timelock guards to have effect (customarily as `0xFFFF,FFFE`)
+- `nSequence<(2^31-1)` indicates a non-finalized tx, otherwise a finalized and mined tx
+- `nSequence` is customarily set to `(2^31-1)` in transactions that do not utilize timelocks
+- For transactions with `nLocktime` or `CHECKLOCKTIMEVERIFY`, the `nSequence` value must be set to less than `(2^31-1)` for the timelock guards to have effect (customarily as `0xFFFF,FFFE`)
 
 #### `nSequence` as a consensus-enforced relative timelock
 
@@ -57,7 +57,7 @@
 - A transaction can include both timelocked inputs (`nSequence<2^31`) and inputs without a relative timelock (`nSequence>=2^31`)
 - The `nSequence` value is specified in either blocks or seconds
   - A type-flag set in the 23rd LSB (value `1<<22`) where
-    - `1` would cause `nSequence` to be interpreted as a multiple of 512
+    - `1` would cause `nSequence` to be interpreted as a multiple of 512 seconds
     - `0` would cause `nSequence` to be interpreted as a number of blocks
   - When interpreting `nSequence` as a relative timelock, only the `16` LSB are considered
 
